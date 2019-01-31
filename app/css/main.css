@@ -1,0 +1,72 @@
+html {
+    --nav-bar-color: rgb(36, 36, 36);
+    --nav-bar-height: 30px;
+    --nav-button-container-width: 80px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 300;
+}
+body {
+    border-radius: 10px;
+    background-color: white;
+    padding: 0;
+    margin: 0;
+}
+
+#nav-bar {
+    position: relative;
+    width: 100vw;
+    height: var(--nav-bar-height);
+    background-color: var(--nav-bar-color);
+    -webkit-app-region: drag;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    z-index: -1;
+}
+
+#button-container {
+    position: relative;
+    display: flex;
+    width: 80px;
+    height: var(--nav-bar-height);
+    justify-content: space-around;
+    align-items: center;
+    z-index: -1;
+}
+#win-name {
+    flex: 3;
+    height: var(--nav-bar-height);
+}
+
+.nav-button {
+    position: relative;
+    --bcolor: white;
+    width: 15px;
+    height: 15px;
+    border: 2px solid var(--bcolor);
+    border-radius: 100%;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    z-index: 2;
+}
+.nav-button:hover {
+    border-radius: 0px;
+    border-top: none;
+    border-bottom: none;
+}
+
+#nav-min-button {
+    --bcolor: orange;
+}
+#nav-max-button {
+    --bcolor: green;
+}
+#nav-close-button {
+    --bcolor: red;
+}
+
+#main {
+    width: 100vw;
+    height: calc( 100vh - var(--nav-bar-height) )
+}
