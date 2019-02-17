@@ -1,68 +1,76 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
-    <script src="js/tile.js"></script>   
+    <script src="js/tile.js"></script>
 </head>
+
 <body>
     <div id="nav-bar">
         <div id="win-name">map creator</div>
         <div id="button-container">
             <div id="nav-min-button" class="nav-button">
-                <!--<div id="nav-min-icon" class="nav-icon"></div>-->
+                <div id="nav-min-icon" class="nav-icon"></div>
             </div>
             <div id="nav-max-button" class="nav-button">
                 <div id="nav-max-icon" class="nav-icon"></div>
             </div>
             <div id="nav-close-button" class="nav-button">
-                <div id="nav-close-icon" class="nav-icon"></div>
+                <div id="nav-close-icon" class="nav-icon MaxMax-icon"></div>
             </div>
         </div>
     </div>
     <div id="main">
-        <canvas id="canvas"></canvas>
+        <div id="left-container">
+            <canvas id="canvas"></canvas>
+            <div id="save" class="button">save</div>
+            <div id="gear-button">
+                <div id="gear-icon"></div>
+            </div>
+            <div id="grey-cover" class="ZEROop"></div>
+            <div id="new-tile-popup" class="popup ZEROop">
+                <div id="p-close" class="button">
+                    <div id="p-close-i"></div>
+                </div>
+                <div id="p-name-c">
+                    name <br />
+                    <input type="text" id="p-in-name">
+                </div>
+                <div id="p-image-c">
+                    image <br />
+                    <input type="file" accept="image/*" id="p-in-image">
+                </div>
+                <div id="p-save" class="button">save</div>
+            </div>
+            <div id="gear-popup" class="popup ZEROop">
+                <div id="g-close" class="button">
+                    <div id="g-close-i"></div>
+                </div>
+                <div id="g-size-c">
+                    size <br />
+                    <input type="number" id="g-in-size"> px
+                </div>
+                <div id="g-file-c">
+                    file <br />
+                    <input type="file" id="g-in-file">
+                </div>
+                <div id="ins-code" class="button">open file</div>
+            </div>
+        </div>
         <div id="right-container">
-            <div id="tile-name"></div>
+            <div id="tile-name">name#id</div>
             <div id="tile-top-arrow" class="tile-arrow"></div>
             <div id="tile-image"></div>
             <div id="tile-bottom-arrow" class="tile-arrow"></div>
-            <div id="tile-new-button" class="button">+</div>
-        </div>
-        <div id="get-code" class="button"></div>
-        <div id="grey-cover"></div>
-        <div id="gear-button">
-            <div id="gear-icon"></div>
-        </div>
-        <div id="new-tile-popup" class="popup">
-            <div id="p-close" class="button">
-                <div id="p-close-i"></div>
-            </div>
-            <div id="p-name-c">
-                name <br />
-                <input type="text" id="p-in-name">
-            </div>
-            <div id="p-image-c">
-                image <br />
-                <input type="file" id="p-in-image">
-            </div>
-            <div id="p-cancel" class="button">cancel</div>
-            <div id="p-save" class="button">save</div>
-        </div>
-        <div id="gear-popup" class="popup">
-            <div id="g-close" class="button">
-                <div id="g-close-i"></div>
-            </div>
-            <div id="g-size-c">
-                size <br />
-                <input type="number" id="g-in-size"> px
-            </div>
-            <div id="code" class="button">code</div>
+            <div id="tile-new-button" class="button">new tile</div>
         </div>
     </div>
     <script src="js/main.js"></script>
 </body>
+
 </html>

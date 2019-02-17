@@ -3,8 +3,9 @@ import { app, BrowserWindow } from 'electron';
 let win :BrowserWindow | null;
 
 function createWindow () {
-  win = new BrowserWindow({ width: 800, height: 600, frame: false, transparent: true })
+  win = new BrowserWindow({ width: 800, height: 600, frame: false })
   win.loadFile('./app/index.html')
+  win.webContents.toggleDevTools();
   win.on('closed', () => {
     win = null
   })

@@ -1,21 +1,182 @@
 "use strict";
-if (!Object.prototype.hasOwnProperty.call(Array.prototype, 'includes')) {
-    Object.defineProperty(Array, 'includes', {
-        value(searchElement, fromIndex = 0) {
-            for (let i = fromIndex; i < this.length; i++) {
-                if (isNaN(searchElement) && isNaN(this[i]))
-                    return true;
-                if (searchElement === this[i])
-                    return true;
-            }
-            return false;
-        }
-    });
-}
-const keys = [];
-function onKeysChange() {
-}
-document.addEventListener('keydown', e => {
-    if (keys.includes(e.keyCode)) {
-    }
+const { BrowserWindow, remote } = require("electron"), keys = [], win = () => remote.BrowserWindow.getFocusedWindow(), closeButton = {
+    el: document.getElementById('nav-close-button'),
+    mask: document.getElementById('nav-close-icon')
+}, minButton = {
+    el: document.getElementById('nav-min-button'),
+    mask: document.getElementById('nav-min-icon')
+}, maxButton = {
+    el: document.getElementById('nav-max-button'),
+    mask: document.getElementById('nav-max-icon')
+}, popupEls = [], saveButton = document.getElementById('save'), gearButton = document.getElementById('gear-button'), topArrowButton = document.getElementById('tile-top-arrow'), bottomArrowButton = document.getElementById('tile-bottom-arrow'), tileNewButton = document.getElementById('tile-new-button'), gearCloseButton = document.getElementById('g-close'), gearInsCode = document.getElementById('ins-code'), tileNewClose = document.getElementById('p-close'), tileNewSave = document.getElementById('p-save'), tileImage = document.getElementById('tile-image'), tileName = document.getElementById('tile-name'), tileNewNameIN = document.getElementById('p-in-name'), tileNewFileIN = document.getElementById('p-in-image'), DATA = {
+    json: {
+        size: 100,
+        tiles: [],
+        map: [
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1]
+        ]
+    },
+    res: []
+};
+var TileID = 0;
+popupEls.push(document.getElementById('new-tile-popup'), document.getElementById('gear-popup'));
+closeButton.el.addEventListener('click', () => {
+    win().close();
 });
+minButton.el.addEventListener('click', () => {
+    win().minimize();
+});
+maxButton.el.addEventListener('click', () => {
+    if (!win().isMaximized()) {
+        win().maximize();
+    }
+    else {
+        win().unmaximize();
+    }
+    ;
+});
+window.addEventListener('resize', setMaxButtonMask);
+document.addEventListener('keydown', e => {
+    if (keys.indexOf(e.keyCode) === -1) {
+        keys.push(e.keyCode);
+    }
+    onKeysChange();
+});
+document.addEventListener('keyup', e => {
+    if (keys.indexOf(e.keyCode) !== -1) {
+        keys.splice(keys.indexOf(e.keyCode), 1);
+    }
+    onKeysChange();
+});
+gearButton.addEventListener('click', () => popup(1));
+gearCloseButton.addEventListener('click', () => popup(1));
+gearInsCode.addEventListener('click', () => popup(1));
+tileNewButton.addEventListener('click', () => popup(0));
+tileNewClose.addEventListener('click', () => popup(0));
+topArrowButton.addEventListener('click', () => {
+    if (TileID <= 0)
+        TileID = DATA.json.tiles.length === 0 ? 0 : DATA.json.tiles.length - 1;
+    else
+        --TileID;
+    onTileIDChange();
+});
+bottomArrowButton.addEventListener('click', () => {
+    if (TileID >= DATA.json.tiles.length - 1)
+        TileID = 0;
+    else
+        ++TileID;
+    onTileIDChange();
+});
+tileNewSave.addEventListener('click', () => {
+    const name = tileNewNameIN.value;
+    if (tileNewFileIN.files.length === 0)
+        return;
+    const file = tileNewFileIN.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function (e) {
+        const res = e.target.result;
+        DATA.json.tiles.push({
+            name: name,
+            id: DATA.json.tiles.length,
+            resID: DATA.res.length
+        });
+        DATA.res.push(res);
+        popup(0);
+        onTileIDChange();
+    };
+});
+setMaxButtonMask();
+onTileIDChange();
+function popup(popupElid) {
+    const greyBG = document.getElementById('grey-cover');
+    const popupEl = popupEls[popupElid];
+    if (greyBG !== null && popupEl !== null) {
+        if (popupEl.style.display !== 'block') {
+            for (let i of popupEls) {
+                i.style.display = 'none';
+                if (i.classList.contains('ONEop'))
+                    i.classList.remove('ONEop');
+                if (!i.classList.contains('ZEROop'))
+                    i.classList.add('ZEROop');
+            }
+            greyBG.style.display = 'block';
+            if (greyBG.classList.contains('ZEROop'))
+                greyBG.classList.remove('ZEROop');
+            if (!greyBG.classList.contains('ONEop'))
+                greyBG.classList.add('ONEop');
+            popupEl.style.display = 'block';
+            if (popupEl.classList.contains('ZEROop'))
+                popupEl.classList.remove('ZEROop');
+            if (!popupEl.classList.contains('ONEop'))
+                popupEl.classList.add('ONEop');
+        }
+        else {
+            for (let i of popupEls) {
+                i.style.display = 'none';
+                if (i.classList.contains('ONEop'))
+                    i.classList.remove('ONEop');
+                if (!i.classList.contains('ZEROop'))
+                    i.classList.add('ZEROop');
+            }
+            if (greyBG.classList.contains('ONEop'))
+                greyBG.classList.remove('ONEop');
+            if (!greyBG.classList.contains('ZEROop'))
+                greyBG.classList.add('ZEROop');
+            setTimeout(() => {
+                greyBG.style.display = 'none';
+            }, 600);
+        }
+    }
+}
+function onTileIDChange() {
+    const tile = getTileById(TileID);
+    if (DATA.json.tiles.length === 0 || tile === null) {
+        tileImage.style.backgroundImage = '';
+        tileName.innerHTML = 'name#id';
+    }
+    else {
+        tileImage.style.backgroundImage = `url(${DATA.res[tile.resID]})`;
+        tileName.innerHTML = `${tile.name}#${tile.id}`;
+    }
+}
+function getTileById(id) {
+    let res = null;
+    for (let i of DATA.json.tiles) {
+        if (i.id === id)
+            res = i;
+    }
+    return res;
+}
+function setMaxButtonMask() {
+    if (!win().isMaximized()) {
+        maxButton.mask.classList.remove('MinMax-icon');
+        maxButton.mask.classList.add("MaxMax-icon");
+    }
+    else {
+        maxButton.mask.classList.add('MinMax-icon');
+        maxButton.mask.classList.remove("MaxMax-icon");
+    }
+    ;
+}
+function onKeysChange() {
+    const isInKeys = function (...el) {
+        for (let i of el) {
+            if (keys.indexOf(i) === -1)
+                return false;
+        }
+        return true;
+    };
+    if (isInKeys(17, 82))
+        location.reload();
+    if (isInKeys(18, 16, 73)) {
+        win().webContents.toggleDevTools();
+    }
+}
