@@ -9,12 +9,16 @@ interface dataInterface {
 interface __DATA_json {
     size: number,
     tiles: __DATA_json_tile[],
-    map: number[][]
+    map: __DATA_json_mapTile[]
 }
 interface __DATA_json_tile {
     name: string,
     id: number,
     resID: number
+}
+interface __DATA_json_mapTile {
+    id: number,
+    pos: [number, number]
 }
 
 const { BrowserWindow, remote } = require("electron"),
@@ -50,21 +54,21 @@ const { BrowserWindow, remote } = require("electron"),
         json: {
             size: 100,
             tiles: [],
-            map: [
-                [-1, -1, -1, -1, -1, -1, -1, -1],
-                [-1, -1, -1, -1, -1, -1, -1, -1],
-                [-1, -1, -1, -1, -1, -1, -1, -1],
-                [-1, -1, -1, -1, -1, -1, -1, -1],
-                [-1, -1, -1, -1, -1, -1, -1, -1],
-                [-1, -1, -1, -1, -1, -1, -1, -1],
-                [-1, -1, -1, -1, -1, -1, -1, -1],
-                [-1, -1, -1, -1, -1, -1, -1, -1]
-            ]
+            map: []
         },
         res: []
-    }
+    },
+    canvas = <HTMLCanvasElement>document.getElementById('canvas'),
+    ctx = <CanvasRenderingContext2D>canvas.getContext('2d'),
+    { log } = console;
 
 var TileID = 0;
+var mouseDown = false;
+var step = 100;
+var lastPos : [number, number] = [NaN,NaN];
+var offset : [number, number] = [0,0];
+var mouseX = 0;
+var mouseY = 0;
 
 popupEls.push(<HTMLElement>document.getElementById('new-tile-popup'), <HTMLElement>document.getElementById('gear-popup'));
 
@@ -110,25 +114,25 @@ tileNewButton.addEventListener('click', () => popup(0));
 tileNewClose.addEventListener('click', () => popup(0));
 
 topArrowButton.addEventListener('click', () => {
-    if(TileID <= 0) TileID = DATA.json.tiles.length === 0 ? 0 :  DATA.json.tiles.length-1;
+    if (TileID <= 0) TileID = DATA.json.tiles.length === 0 ? 0 : DATA.json.tiles.length - 1;
     else --TileID;
     onTileIDChange();
 });
 
 bottomArrowButton.addEventListener('click', () => {
-    if(TileID >= DATA.json.tiles.length-1) TileID = 0;
+    if (TileID >= DATA.json.tiles.length - 1) TileID = 0;
     else ++TileID;
     onTileIDChange();
 });
 
 tileNewSave.addEventListener('click', () => {
     const name = tileNewNameIN.value;
-    if((<FileList>tileNewFileIN.files).length === 0) return;
+    if ((<FileList>tileNewFileIN.files).length === 0) return;
     const file = (<FileList>tileNewFileIN.files)[0];
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = function(e) {
-        const res = (<{result: string}><unknown>e.target).result;
+    reader.onload = function (e) {
+        const res = (<{ result: string }><unknown>e.target).result;
         DATA.json.tiles.push({
             name: name,
             id: DATA.json.tiles.length,
@@ -139,6 +143,9 @@ tileNewSave.addEventListener('click', () => {
         onTileIDChange();
     };
 });
+
+canvas.addEventListener('mousedown', () => { mouseDown = true; if (canvas.style.cursor === "grab") canvas.style.cursor = "grabbing" });
+canvas.addEventListener('mouseup', () => { mouseDown = false; canvas.style.cursor = '' })
 
 
 setMaxButtonMask();
@@ -178,7 +185,7 @@ function popup(popupElid: number) {
 
 function onTileIDChange() {
     const tile = getTileById(TileID);
-    if(DATA.json.tiles.length === 0 || tile === null) {
+    if (DATA.json.tiles.length === 0 || tile === null) {
         tileImage.style.backgroundImage = '';
         tileName.innerHTML = 'name#id';
     } else {
@@ -187,10 +194,10 @@ function onTileIDChange() {
     }
 }
 
-function getTileById(id :number) {
-    let res : null | __DATA_json_tile = null;
-    for(let i of DATA.json.tiles) {
-        if(i.id === id) res = i;
+function getTileById(id: number) {
+    let res: null | __DATA_json_tile = null;
+    for (let i of DATA.json.tiles) {
+        if (i.id === id) res = i;
     }
     return res;
 }
@@ -215,5 +222,20 @@ function onKeysChange() {
     if (isInKeys(17, 82)) location.reload();
     if (isInKeys(18, 16, 73)) {
         win().webContents.toggleDevTools()
+    }
+    if (isInKeys(32)) { if (!mouseDown) canvas.style.cursor = "grab" }
+    else { canvas.style.cursor = ""; }
+    const transStep = 50
+    if (isInKeys(17, 107) && step <= 1990) {
+        ctx.translate(-transStep, -transStep)
+        offset[0] -= transStep;
+        offset[1] -= transStep;
+        step += 10;
+    }
+    if (isInKeys(17, 109) && step >= 20) {
+        ctx.translate(transStep, transStep)
+        offset[0] += transStep;
+        offset[1] += transStep;
+        step -= 10;
     }
 }

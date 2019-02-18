@@ -12,20 +12,17 @@ const { BrowserWindow, remote } = require("electron"), keys = [], win = () => re
     json: {
         size: 100,
         tiles: [],
-        map: [
-            [-1, -1, -1, -1, -1, -1, -1, -1],
-            [-1, -1, -1, -1, -1, -1, -1, -1],
-            [-1, -1, -1, -1, -1, -1, -1, -1],
-            [-1, -1, -1, -1, -1, -1, -1, -1],
-            [-1, -1, -1, -1, -1, -1, -1, -1],
-            [-1, -1, -1, -1, -1, -1, -1, -1],
-            [-1, -1, -1, -1, -1, -1, -1, -1],
-            [-1, -1, -1, -1, -1, -1, -1, -1]
-        ]
+        map: []
     },
     res: []
-};
+}, canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d'), { log } = console;
 var TileID = 0;
+var mouseDown = false;
+var step = 100;
+var lastPos = [NaN, NaN];
+var offset = [0, 0];
+var mouseX = 0;
+var mouseY = 0;
 popupEls.push(document.getElementById('new-tile-popup'), document.getElementById('gear-popup'));
 closeButton.el.addEventListener('click', () => {
     win().close();
@@ -93,6 +90,9 @@ tileNewSave.addEventListener('click', () => {
         onTileIDChange();
     };
 });
+canvas.addEventListener('mousedown', () => { mouseDown = true; if (canvas.style.cursor === "grab")
+    canvas.style.cursor = "grabbing"; });
+canvas.addEventListener('mouseup', () => { mouseDown = false; canvas.style.cursor = ''; });
 setMaxButtonMask();
 onTileIDChange();
 function popup(popupElid) {
@@ -178,5 +178,25 @@ function onKeysChange() {
         location.reload();
     if (isInKeys(18, 16, 73)) {
         win().webContents.toggleDevTools();
+    }
+    if (isInKeys(32)) {
+        if (!mouseDown)
+            canvas.style.cursor = "grab";
+    }
+    else {
+        canvas.style.cursor = "";
+    }
+    const transStep = 50;
+    if (isInKeys(17, 107) && step <= 1990) {
+        ctx.translate(-transStep, -transStep);
+        offset[0] -= transStep;
+        offset[1] -= transStep;
+        step += 10;
+    }
+    if (isInKeys(17, 109) && step >= 20) {
+        ctx.translate(transStep, transStep);
+        offset[0] += transStep;
+        offset[1] += transStep;
+        step -= 10;
     }
 }

@@ -5,6 +5,7 @@ html {
     --secound-color: rgb(31, 32, 37);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: 300;
+    -webkit-user-drag: none;
 }
 
 body {
@@ -15,6 +16,7 @@ body {
     color: white;
     border-radius: 5px;
     overflow: hidden;
+    -webkit-user-drag: none;
 }
 
 #nav-bar {
@@ -116,8 +118,8 @@ body {
 }
 
 #canvas {
-    height: var(--main-height);
-    width: var(--left-container-width);
+    /*height: var(--main-height);
+    //width: var(--left-container-width);*/
     background-color: white;
 }
 
@@ -142,6 +144,7 @@ body {
     border-radius: 5px;
     cursor: pointer;
     transition-duration: 0.1s;
+    user-select: none;
 }
 
 .button:hover {
@@ -268,6 +271,8 @@ input:focus {
     font-size: 25px;
     max-width: var(--right-container-width);
     text-align: center;
+    user-select: none;
+    -webkit-user-drag: none;
 }
 
 #tile-top-arrow {
